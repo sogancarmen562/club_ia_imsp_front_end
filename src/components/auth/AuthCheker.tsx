@@ -1,29 +1,24 @@
-import axios from "axios";
-import { useEffect } from "react";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-function AuthChecker() {
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-          withCredentials: true,
-        });
-        const data = res.data?.data.isTrue;
-        if (!data) {
-          localStorage.removeItem("isAuthenticated");
-          window.location.href = "/auth/signin";
-        }
-      } catch (error) {
-        localStorage.removeItem("isAuthenticated");
-      }
-    };
-
-    checkAuth();
-    const interval = setInterval(checkAuth, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return null;
+export function AuthChecker(request: NextRequest) {
+  const token = request.cookies.get('token')?.value;
+  const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
+  
+  if (!token && !isAuthPage) {
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
+  }
+  
+  if (token && isAuthPage) {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+  
+  return NextResponse.next();
 }
 
-export default AuthChecker;
+export const config = {
+  matcher: [
+    '/admin/:path*',
+    '/auth/:path*'
+  ]
+};

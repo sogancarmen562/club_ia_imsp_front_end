@@ -37,10 +37,7 @@ const SignIn: React.FC = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/forgot-password`,
-        {
-          email: email,
-        },
+        `${process.env.NEXT_PUBLIC_API_URL}/user/forgot-password/${email}`,{}
       );
       if (response.data.sucess) {
         toast.success(response.data.message);

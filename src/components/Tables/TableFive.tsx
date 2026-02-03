@@ -5,23 +5,19 @@ import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 
 const TableFive = () => {
-  const { setArticleData, setData, setIsAllowed } = useDashboard();
+  const { setArticlesData, articles, setData } = useDashboard();
   const route = useRouter();
-//swapfile  const dashboardContext = useDashboard;
   const [isLoading, setIsLoading] = useState(false);
-  const [articles, setArticles] = useState<any[]>([]);
   const [isArticleExist, setIsArticleExist] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isLoadingVisible, setIsLoadingVisible] = useState<boolean>(false);
   const [isVisibleDel, setIsVisibleDel] = useState<boolean>(true);
   const [isLoadingVisibleDel, setIsLoadingVisibleDel] = useState<boolean>(false);
 
-//  const { setData, setIsAllowed } = dashboardContext();
-
   useEffect(() => {
     const value = async () => {
       try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/articles/article`, {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/content/article`, {
           withCredentials: true,
         });
       if (res.data?.data.length === 0) {
@@ -29,8 +25,7 @@ const TableFive = () => {
       } else {
         setIsArticleExist(false);
       }
-        setArticles(res.data?.data);
-        setArticleData(res.data?.data);
+        setArticlesData(res.data?.data);
       } catch(e) {}
     };
 
@@ -39,26 +34,30 @@ const TableFive = () => {
 
   const handleSubmit = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/articles/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/content/${id}`, {
         withCredentials: true,
       });
       setIsVisibleDel(false);
       setIsLoadingVisibleDel(true);
       const updatedArticles = articles.filter((item: any) => item.id !== id);
-      setArticles(updatedArticles);
+      setArticlesData(updatedArticles);
       setIsArticleExist(updatedArticles.length === 0);
-      //if(articles.length == 0) setIsArticleExist(true);
+      if(articles.length == 0) setIsArticleExist(true);
     } catch (error) {}
   };
-  const handleSubmitSecond = (id: string) => {
-    setIsLoading(true);
+  const handleSubmitSecond = async (id: string) => {
     const result = articles.find((article) => article.id === id);
     if (result) {
-      setData(result);
-      setIsAllowed(true);
+      const articleOrProject = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/content/by/${id}`, {
+        withCredentials: true,
+      });
+      setData(articleOrProject.data.data);
+      // setId(id);
+      // setData(result);
+      // setIsAllowed(true);
       route.push("/forms/form-layout");
     }
-    setIsLoading(false);
+    // setIsLoading(false);
   };
   return (
     <div className={isLoading ? "cursor-wait rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1" :
@@ -83,7 +82,7 @@ const TableFive = () => {
           </thead>
           <tbody>
             {articles && articles?.length !== 0 ? (<tr></tr>) : (<tr>
-              <td className="text-center" colSpan={4}><ClipLoader color="black" className="py-4" /></td>
+              {/* <td className="text-center" colSpan={4}><ClipLoader color="black" className="py-4" /></td> */}
               </tr>)}
             {articles?.length == 0 ? (
               <tr>
@@ -102,7 +101,7 @@ const TableFive = () => {
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                     <p className="text-black dark:text-white">
-                      {value.date_publication}
+                      {value.createdAt}
                     </p>
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -112,8 +111,8 @@ const TableFive = () => {
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                     <div className="flex items-center space-x-3.5">
-                    {isLoadingVisible && <ClipLoader color="black" className="text-center"/>}
-                      {isVisible && <button
+                    {/* {isLoadingVisible && <ClipLoader color="black" className="text-center"/>} */}
+                      {<button
                         onClick={() => {
                           handleSubmitSecond(value.id);
                         }}
@@ -137,8 +136,8 @@ const TableFive = () => {
                           />
                         </svg>
                         </button>}
-                      {isLoadingVisibleDel && <ClipLoader color="black" className="text-center"/>}
-                      {isVisibleDel && <button
+                      {/* {<ClipLoader color="black" className="text-center"/>} */}
+                      {<button
                         onClick={() => handleSubmit(value.id)}
                         className="hover:text-primary"
                       >

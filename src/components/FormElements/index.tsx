@@ -1,19 +1,14 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import axios from "axios";
-import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { BeatLoader } from "react-spinners";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
-import Editor from "../Editor";
-import { useDashboard } from "@/app/context/dashboardContext";
 
 const FormElements = () => {
-  const {content} = useDashboard();
-  const what = localStorage.getItem("isAuthenticated");
-  if (!what) redirect("/auth/signin");
+  // const {content} = useDashboard();
   const [title, setTitle] = useState("");
   const [contain, setContain] = useState("");
   const [selectedOption, setSelectedOption] = useState<string>("");
@@ -53,12 +48,12 @@ const FormElements = () => {
     // Ajout des autres données
     formData.append("title", title);
     formData.append("contain", contain);
-    formData.append("type", selectedOption);
+    const type = selectedOption;
     try {
       setIsVisibleLoader(true);
       setIsVisible(false);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/articles`,
+        `${process.env.NEXT_PUBLIC_API_URL}/content/${type.toLowerCase()}`,
         formData,
         {
           withCredentials: true,
@@ -101,7 +96,7 @@ const FormElements = () => {
                   </label> */}
                   <div>
                     <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                      Titre
+                      Titre <span className="text-red-500 font-bold">*</span>
                     </label>
                     <input
                       value={title}
@@ -118,7 +113,7 @@ const FormElements = () => {
                   <div className="pt-4">
                     <div>
                       <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                        Contenu
+                        Contenu <span className="text-red-500 font-bold">*</span>
                       </label>
                       {/*<Editor />*/}
                       <div
@@ -160,7 +155,7 @@ const FormElements = () => {
               <div className="flex flex-col gap-5.5 p-6.5">
                 <div>
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Selectionner Article ou Projet
+                    Selectionner Article ou Projet <span className="text-red-500 font-bold">*</span>
                   </label>
 
                   <div className="relative z-20 bg-white dark:bg-form-input">
@@ -259,7 +254,6 @@ const FormElements = () => {
                     type="file"
                     onChange={handleFileChange}
                     multiple
-                    required
                     className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                   />
                 </div>

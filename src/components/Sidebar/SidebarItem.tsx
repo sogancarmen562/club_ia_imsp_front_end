@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useDashboard } from "@/app/context/dashboardContext";
 
 const SidebarItem = ({ item, pageName, setPageName }: any) => {
-  const { setIsAllowed } = useDashboard();
+  // const { setIsAllowed } = useDashboard();
 
   const handleClick = () => {
     // setIsAllowed(false)

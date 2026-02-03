@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,7 +8,6 @@ import SidebarItem from "@/components/Sidebar/SidebarItem";
 import ClickOutside from "@/components/ClickOutside";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useDashboard } from "@/app/context/dashboardContext";
-import { useRouter } from "next/router";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -130,7 +129,7 @@ const initialMenuGroups = [
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
-  const { isAllowed, setIsAllowed, role } = useDashboard();
+  const { user } = useDashboard();
   const [menuGroups, setMenuGroups] = useState(initialMenuGroups);
   // const [isLoading, setIsLoading] = useState(false);
   // const router = useRouter();
@@ -169,26 +168,27 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   //   }
   // }, [role]);
 
-  useEffect(() => {
-    if (isAllowed) {
-      setMenuGroups((prevMenuGroups) => {
-        const updatedMenuGroups = [...prevMenuGroups];
-        updatedMenuGroups.forEach((group) => {
-          const alreadyExists = group.menuItems[1].children?.some(
-            (item) => item.label === "Mise à jour article/projet",
-          );
+  // useEffect(() => {
+  //   if (user?.role) {
+  //     setMenuGroups((prevMenuGroups) => {
+  //       const updatedMenuGroups = [...prevMenuGroups];
+  //       updatedMenuGroups.forEach((group) => {
+  //         const alreadyExists = group.menuItems[1].children?.some(
+  //           (item) => item.label === "Mise à jour article/projet",
+  //         );
 
-          if (!alreadyExists) {
-            group.menuItems[1].children?.push({
-              label: "Mise à jour article/projet",
-              route: "/forms/form-layout",
-            });
-          }
-        });
-        return updatedMenuGroups;
-      });
-    }
-  }, [isAllowed]);
+  //         if (!alreadyExists) {
+  //           group.menuItems[1].children?.push({
+  //             label: "kdjker",
+  //             route: "/forms/form-layout",
+  //             hidden: true
+  //           });
+  //         }
+  //       });
+  //       return updatedMenuGroups;
+  //     });
+  //   }
+  // }, [user?.role]);
 
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
@@ -241,14 +241,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </h3>
 
                 <ul className="mb-6 flex flex-col gap-1.5">
-                  {group.menuItems.map((menuItem, menuIndex) => (
+                  {group.menuItems.map((menuItem, menuIndex) => {
+                    return (
                     <SidebarItem
                       key={menuIndex}
                       item={menuItem}
                       pageName={pageName}
                       setPageName={setPageName}
                     />
-                  ))}
+                  )})}
                 </ul>
               </div>
             ))}

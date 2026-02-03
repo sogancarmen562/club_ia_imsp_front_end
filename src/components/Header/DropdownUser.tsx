@@ -13,8 +13,9 @@ interface CustomJwtPayload extends JwtPayload {
   _id: string;
 }
 const DropdownUser = () => {
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [user, setUser] = useState<any>();
+  const {user, setUser} = useDashboard();
 
   const route = useRouter();
 
@@ -24,13 +25,7 @@ const DropdownUser = () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
           withCredentials: true,
         });
-        const values = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/user/by/${res.data.data.user.email}`,
-          {
-            withCredentials: true,
-          },
-        );
-        setUser(values.data);
+        setUser(res.data.data);
       } catch (error) {}
     };
 
@@ -46,7 +41,6 @@ const DropdownUser = () => {
           withCredentials: true,
         },
       );
-      localStorage.removeItem("isAuthenticated");
       route.push("/auth/signin");
     } catch (error) {}
   };
@@ -60,9 +54,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {user?.data.email}
+            {user?.email}
           </span>
-          <span className="block text-xs">{user?.data.role}</span>
+          <span className="block text-xs font-bold text-black">{user?.role}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">

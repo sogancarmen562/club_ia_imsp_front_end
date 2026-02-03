@@ -7,11 +7,6 @@ import ImageGallery from "@/components/Showimages/page";
 import { toast } from "react-toastify";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
-import { redirect } from "next/navigation";
-import Editor from "../Editor";
-import Loadable from "next/dist/shared/lib/loadable.shared-runtime";
-import LoadState from "../LoadState";
-import { title } from "process";
 
 // export const metadata: Metadata = {
 //   title: "Next.js Form Layout | TailAdmin - Next.js Dashboard Template",
@@ -20,17 +15,15 @@ import { title } from "process";
 // };
 
 const FormLayout = () => {
-  const what = localStorage.getItem("isAuthenticated");
-  if (!what) redirect("/auth/signin");
-  const { data, content } = useDashboard();
+  const { data } = useDashboard();
   const [article, setArticle] = useState<any>(null);
   // const [files, setFile] = useState<FileList | null>(null);
-  const [files, setFiles] = useState<any[]>(data?.files || []);
+  const [files, setFiles] = useState<any[]>(data?.filesUrl || []);
 
   const { quill, quillRef } = useQuill();
   useEffect(() => {
     if (quill && quillRef.current) {
-      quill.clipboard.dangerouslyPasteHTML(data.contain);
+      quill.clipboard.dangerouslyPasteHTML(data?.contain);
       quill.on("text-change", () => {
         setArticleContain(quill.root.innerHTML);
       });
@@ -42,7 +35,7 @@ const FormLayout = () => {
       setArticle(data);
       setArticleTitle(data.title);
       setArticleContain(data.contain);
-      setFiles(data.files || []);
+      setFiles(data.files && data.files.length > 0 ? data.files : files);
     }
   }, [data]);
   const [articleTitle, setArticleTitle] = useState<string>(data?.title);
@@ -84,20 +77,20 @@ const FormLayout = () => {
     }
   };
 
-  const handleDelete = async (fileId: string) => {
+  const handleDelete = async (index: string) => {
     try {
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/articles/${data?.id}/medias/${fileId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/content/${data?.id}/medias/${index}`,
         { withCredentials: true },
       );
-      setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
+      setFiles((prevFiles) => prevFiles.filter((_, indexs) => indexs !== Number(index) - 1));
     } catch (error) {}
   };
 
   return (
     // <DefaultLayout>
     <>
-      <Breadcrumb pageName="Mise à jour" />
+      <Breadcrumb pageName="Mis à jour" />
 
       <form onSubmit={handleSubmit}>
         <div className="gap-9 sm:grid-cols-2">
@@ -182,7 +175,8 @@ const FormLayout = () => {
           </div>
         </div>
       </form>
-      <ImageGallery files={files} onDelete={handleDelete} />
+      {files && files.length > 0 && <ImageGallery files={files} onDelete={handleDelete} />}
+      {/* <ImageGallery files={files} onDelete={handleDelete} /> */}
       {/* </DefaultLayout> */}
     </>
   );

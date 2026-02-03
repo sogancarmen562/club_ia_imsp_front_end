@@ -53,7 +53,7 @@ const ActivateAccount: React.FC = () => {
         token: token,
         password: newPassword,
       });
-      if (response.data.sucess) {
+      if (response.data?.sucess) {
         toast.success(response.data.message);
         router.push("/auth/signin");
       }

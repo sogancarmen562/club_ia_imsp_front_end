@@ -3,7 +3,6 @@ import axios, { all } from "axios";
 import { useEffect, useState } from "react";
 
 const TableThree = () => {
-  // const token = cookies().get("Authorization")?.value;
   const [allEditor, setAllEditor] = useState<any>();
   const [role, setRole] = useState<any>();
   const [isEditorExist, setIsEditorValue] = useState<boolean>(true);
@@ -14,7 +13,8 @@ const TableThree = () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
           withCredentials: true,
         });
-        if (res.data.data.user.role == "admin") {
+        setRole(res.data.data.role);
+        if (res.data.data.role == "admin") {
           const allEditors = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/user/editor`,
             { withCredentials: true },
@@ -85,7 +85,7 @@ const TableThree = () => {
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                     <p className="text-black dark:text-white">
-                      {value.data_inscription}
+                      {value.joinedAt}
                     </p>
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">

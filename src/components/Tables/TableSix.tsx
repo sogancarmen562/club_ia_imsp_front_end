@@ -5,10 +5,9 @@ import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 
 const TableSix = () => {
-  const { setData, setIsAllowed, setProjectData} = useDashboard();
+  const { setProjectsData, projects, setData } = useDashboard();
   const route = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [projects, setProject] = useState<any>();
   const [isProjectExist, setIsProjectExist] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isLoadingVisible, setIsLoadingVisible] = useState<boolean>(false);
@@ -18,7 +17,7 @@ const TableSix = () => {
   useEffect(() => {
     const value = async () => {
       try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/articles/project`, {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/content/project`, {
           withCredentials: true,
         })
         if(res.data?.data.length === 0) {
@@ -26,8 +25,7 @@ const TableSix = () => {
         } else {
           setIsProjectExist(false);
         }
-        setProject(res.data?.data);
-        setProjectData(res.data?.data);
+        setProjectsData(res.data?.data);
       } catch(e) {}
     };
 
@@ -36,27 +34,48 @@ const TableSix = () => {
 
   const handleSubmit = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/articles/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/content/${id}`, {
         withCredentials: true,
       });
       setIsVisibleDel(false);
       setIsLoadingVisibleDel(true);
      const updateProjects = projects.filter((item: any) => item.id !== id);
-      setProject(updateProjects);
+      setProjectsData(updateProjects);
       setIsProjectExist(updateProjects.length === 0);
     } catch (error) {}
   };
-  const handleSubmitSecond = (id: string) => {
-      setIsLoading(true);
-      const result = projects.find(
-        (project: any) => project.id == Number(id)
-      )
-      setIsLoadingVisible(true);
-      setIsVisible(false);
-      setData(result);
-      setIsAllowed(true);
-      route.push("/forms/form-layout");
+  const handleSubmitSecond = async (id: string) => {
+    try {
+      const result = projects.find(project => project.id == Number(id));
+      if(result) {
+        const articleOrProject = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/content/by/${id}`, {
+          withCredentials: true
+        })
+        setData(articleOrProject.data.data);
+        route.push('/forms/form-layout')
+      }
+    } catch (error) {}
   };
+  // const handleSubmitSecond = async (id: string) => {
+  //   try {
+  //      setIsLoading(true);
+  //     const result = projects.find(
+  //       (project: any) => project.id == Number(id)
+  //     )
+  //     if (result) {
+  //     const articleOrProject = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/content/by/${id}`, {
+  //       withCredentials: true,
+  //     });
+  //     setData(articleOrProject.data.data);
+  //     setIsLoadingVisible(true);
+  //     setIsVisible(false);
+  //     // setData(result);
+  //     // setIsAllowed(true);
+  //     route.push("/forms/form-layout");
+  //   } catch (error) {
+      
+  //   }}}
+     
   return (
     <div className={isLoading ? "cursor-wait rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1" :
                                 "cursor-pointer rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1"}>
@@ -80,7 +99,7 @@ const TableSix = () => {
           </thead>
           <tbody>
           {projects ? (<tr></tr>) : (<tr>
-              <td className="text-center" colSpan={4}><ClipLoader color="black" className="py-4" /></td>
+              {/* <td className="text-center" colSpan={4}><ClipLoader color="black" className="py-4" /></td> */}
               </tr>)}
              {projects?.length == 0 ? (
              <tr>
@@ -98,7 +117,7 @@ const TableSix = () => {
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                     <p className="text-black dark:text-white">
-                      {value.date_publication}
+                      {value.createdAt}
                     </p>
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
@@ -108,7 +127,7 @@ const TableSix = () => {
                   </td>
                   <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                     <div className="flex items-center space-x-3.5">
-                    {isLoadingVisible && <ClipLoader color="black" className="text-center"/>}
+                    {/* {isLoadingVisible && <ClipLoader color="black" className="text-center"/>} */}
                       {isVisible && <button
                         onClick={() => {
                           handleSubmitSecond(value.id);
@@ -133,7 +152,7 @@ const TableSix = () => {
                           />
                         </svg>
                       </button>}
-                      {isLoadingVisibleDel && <ClipLoader color="black" className="text-center"/>}
+                      {/* {isLoadingVisibleDel && <ClipLoader color="black" className="text-center"/>} */}
                       {isVisibleDel && <button
                         onClick={() => handleSubmit(value.id)}
                         className="hover:text-primary"
@@ -174,5 +193,4 @@ const TableSix = () => {
     </div>
   );
 };
-
 export default TableSix;

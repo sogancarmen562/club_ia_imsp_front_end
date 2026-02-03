@@ -17,12 +17,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { BeatLoader } from "react-spinners";
-import Loader from "../common/Loader";
 import { redirect } from "next/navigation";
 
 const FormEditor = () => {
-  const what = localStorage.getItem("isAuthenticated");
-  if (!what) redirect("/auth/signin");
   const [email, setEmail] = useState("");
   const [isVisibleLoader, setIsVisibleLoader] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -37,11 +34,9 @@ const FormEditor = () => {
     try {
       setIsVisibleLoader(true);
       setIsVisible(false);
+      console.log(email)
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user`,
-        {
-          email: email,
-        },
+        `${process.env.NEXT_PUBLIC_API_URL}/user/editor/${email}`,{},
         {
           withCredentials: true,
         },

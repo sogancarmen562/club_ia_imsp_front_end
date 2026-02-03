@@ -14,16 +14,20 @@ const ECommerce: React.FC = () => {
   useEffect(() => {
     const value = async () => {
         try {
-         const [resMedias, resSubscriber] = await Promise.all([
-           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/articles/medias`, {
-           withCredentials: true
-         }),
-           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
-           withCredentials: true
-         }),
-      ]);
-          setAllMedias(resMedias.data?.data || 0);
-          setAllSubscriber(resSubscriber.data?.data.length || 0);
+        const allArticleMedias = articles?.map((article: any) => {
+          return article.filesUrl
+        })
+        const allProjectMedias = projects?.map((project: any) => {
+          return project.filesUrl
+        })
+
+        const allSubscriber = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/subscriber`, {
+          withCredentials: true
+        })
+        setAllMedias(allArticleMedias.length + allProjectMedias.length)
+        setAllSubscriber(allSubscriber.data?.data.length);
+          // setAllMedias(resMedias.data?.data || 0);
+          // setAllSubscriber(resSubscriber.data?.data.length || 0);
       } catch(e) {}
     }
 

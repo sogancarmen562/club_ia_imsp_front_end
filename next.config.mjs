@@ -3,10 +3,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "4000",
-        pathname: "src/config/saveFilesInDiskServer/images",
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/diia9z7py/**",
       },
     ],
   },

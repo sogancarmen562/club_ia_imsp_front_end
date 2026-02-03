@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import AuthChecker from "../auth/AuthCheker";
 
 export default function DefaultLayout({
   children,
@@ -12,7 +11,7 @@ export default function DefaultLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <>
-      <AuthChecker />
+      {/* <AuthChecker /> */}
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex">
         {/* <!-- ===== Sidebar Start ===== --> */}
