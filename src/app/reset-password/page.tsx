@@ -3,14 +3,9 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import { Metadata } from "next";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import { useDashboard } from "@/app/context/dashboardContext";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
 interface CustomJwtPayload extends JwtPayload {
@@ -26,10 +21,13 @@ interface CustomJwtPayload extends JwtPayload {
 // };
 
 const ActivateAccount: React.FC = () => {
+  type JwtPayload = {
+  _siForActivation: boolean;
+};
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token"); // Récupère le paramètre `token`
-  // const { token, redirect } = router.query;
+  const token = searchParams.get("token");
+  const decoded = token ? jwtDecode<JwtPayload>(token) : ""
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -49,7 +47,7 @@ const ActivateAccount: React.FC = () => {
     }
 
     try {
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/user/active`, {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/user/${decoded && decoded._siForActivation == true ? "active" : "password"}`, {
         token: token,
         password: newPassword,
       });

@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { useRouter } from "next/navigation";
-import { cookies } from "next/headers";
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import { JwtPayload } from "jwt-decode";
 import { useDashboard } from "@/app/context/dashboardContext";
 
 interface CustomJwtPayload extends JwtPayload {
