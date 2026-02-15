@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { BeatLoader } from "react-spinners";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
+import { useRouter } from "next/navigation";
 
 const FormElements = () => {
   // const {content} = useDashboard();
@@ -35,6 +36,7 @@ const FormElements = () => {
   const changeTextColor = () => {
     setIsOptionSelected(true);
   };
+  const route = useRouter();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -65,10 +67,22 @@ const FormElements = () => {
       if (response.data.sucess) {
         setIsVisibleLoader(false);
         setIsVisible(true);
+        toast.success(response.data.message);
       }
-      toast.success(response.data.message);
+
+      if(response.data.sucess == false) {
+        if(response.data.message == "Wrong credentials provided") {
+          await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+            {},
+            {
+              withCredentials: true,
+            },
+          );
+          route.push("/auth/signin");
+        }
+      }
     } catch (error: any) {
-      console.log(error);
       setIsVisibleLoader(false);
       setIsVisible(true);
       toast.error(error.response.data.message);

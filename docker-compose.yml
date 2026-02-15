@@ -1,0 +1,7 @@
+services:
+  club_ia_dashboard:
+    image: carmensogan20/club_ia_dashboard:latest
+    ports:
+      - '${PORT}:${PORT}'
+    env_file:
+      - .env.local

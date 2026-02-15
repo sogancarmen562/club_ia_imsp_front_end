@@ -84,7 +84,7 @@ const initialMenuGroups = [
         label: "Articles/projets",
         route: "#",
         children: [
-          { label: "Ajouter un article/projet", route: "/forms/form-elements" },
+          {  label: "Ajouter un article/projet", route: "/forms/form-elements" },
         ],
       },
       {
@@ -121,6 +121,7 @@ const initialMenuGroups = [
         ),
         label: "Ajouter un éditeur",
         route: "/forms/form-editor",
+        roles: ["admin"],
       },
     ],
   },
@@ -131,6 +132,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
   const { user } = useDashboard();
   const [menuGroups, setMenuGroups] = useState(initialMenuGroups);
+
   // const [isLoading, setIsLoading] = useState(false);
   // const router = useRouter();
 
@@ -241,15 +243,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </h3>
 
                 <ul className="mb-6 flex flex-col gap-1.5">
-                  {group.menuItems.map((menuItem, menuIndex) => {
-                    return (
+                  {group.menuItems
+                  .filter((menuItem) => {
+                    if (!menuItem.roles) return true;
+
+                    return menuItem.roles.includes(user?.role);
+                  })
+                  .map((menuItem, menuIndex) => (
                     <SidebarItem
                       key={menuIndex}
                       item={menuItem}
                       pageName={pageName}
                       setPageName={setPageName}
                     />
-                  )})}
+                  ))}
                 </ul>
               </div>
             ))}

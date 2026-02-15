@@ -24,7 +24,7 @@ const ECommerce: React.FC = () => {
         const allSubscriber = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/subscriber`, {
           withCredentials: true
         })
-        setAllMedias(allArticleMedias.length + allProjectMedias.length)
+        setAllMedias(allArticleMedias.filter(value => value != null).length + allProjectMedias.filter(value => value != null).length)
         setAllSubscriber(allSubscriber.data?.data.length);
           // setAllMedias(resMedias.data?.data || 0);
           // setAllSubscriber(resSubscriber.data?.data.length || 0);
